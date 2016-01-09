@@ -1,0 +1,30 @@
+{
+    "manifest_version": 2,
+    "name": "Plurk-KeyboardControl",
+    "version": "1.0",
+    "description": "噗浪鍵盤控制",
+    "icons": {
+        "128": "128.png",
+        "16": "16.png"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "http://www.plurk.com/*",
+                "https://www.plurk.com/*"
+            ],
+            "js": [
+                "jquery-2.0.2.min.js",
+                "Utils.js",
+                "content-script.js"
+            ]
+        }
+    ],
+    "permissions": [
+        "http://www.plurk.com/",
+        "https://www.plurk.com/"
+    ],
+    "web_accessible_resources": [
+        "jquery-2.0.2.min.map"
+    ]
+}
