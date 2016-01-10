@@ -78,10 +78,18 @@ var Utils = {
 	 * @param  {string} style CSS樣式表
 	 */
 	createStyle: function(styleText) {
-		var style = document.createElement('style');
-		style.type = "text/css";
-		style.appendChild(document.createTextNode(styleText));
-		document.head.appendChild(style);
+		if (styleText.endsWith(".css")) {
+			var link = document.createElement('link');
+			link.rel = "stylesheet";
+			link.href = chrome.extension.getURL(styleText);
+			link.charset = "utf-8";
+			document.head.appendChild(link);
+		} else {
+			var style = document.createElement('style');
+			style.type = "text/css";
+			style.appendChild(document.createTextNode(styleText));
+			document.head.appendChild(style);
+		}
 	},
 
 	Map: {
