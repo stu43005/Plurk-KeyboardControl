@@ -1,6 +1,8 @@
 var KeyboardControl = {
 	target: null,
 	isRenderedHelp: false,
+	isShowHelp: false,
+	isShowPoster: false,
 	helpList: [{
 		title: "動態",
 		shortcuts: [{
@@ -23,7 +25,8 @@ var KeyboardControl = {
 			keys: ["Enter"]
 		}, {
 			label: "關閉噗文",
-			keys: ["Esc"]
+			keys: ["Esc"],
+			original: true
 		}]
 	}, {
 		title: "導航",
@@ -56,7 +59,7 @@ var KeyboardControl = {
 		Utils.createStyle("style.css");
 
 		$(document).bind("keydown", function(e) {
-			if ($.inArray(e.target.nodeName.toLowerCase(), ["input", "textarea"])) {
+			if ($.inArray(e.target.nodeName.toLowerCase(), ["input", "textarea"]) == -1) {
 				switch (e.keyCode) {
 					case 13: // enter
 						if (KeyboardControl.target === null) break;
@@ -100,22 +103,29 @@ var KeyboardControl = {
 
 					case 78: // n
 						if ($("#form_holder:visible").length < 1) {
+							e.preventDefault();
+							KeyboardControl.showPlurkPoster();
 							$("#input_big").focus();
-							// TODO: 突出輸入區
 						}
 						break;
 
 					case 191: // ?
 						KeyboardControl.showHelp();
 						break;
+					case 27: // esc
+						KeyboardControl.closeHelp();
+						break;
 				}
 			} else {
 				switch (e.keyCode) {
 					case 27: // esc
+						KeyboardControl.closePlurkPoster();
 						$("#input_big, #input_small").blur();
 						break;
 				}
 			}
+		}).on("submit", "#pane_plurk", function() {
+			KeyboardControl.closePlurkPoster();
 		});
 	},
 
@@ -152,6 +162,7 @@ var KeyboardControl = {
 	},
 
 	calcPosition: function(id) {
+		if (typeof id === "number") return ($(window).width() - id) / 2;
 		return ($(window).width() - $("#" + id).outerWidth()) / 2;
 	},
 
@@ -228,30 +239,54 @@ var KeyboardControl = {
 		});
 	},
 
+	showPlurkPoster: function() {
+		if (this.isShowPoster) return;
+
+		this._showOverlay("poster", function() {
+			KeyboardControl.closePlurkPoster();
+		}, "#layout_body");
+
+		$("#plurk_form").hide().css("left", this.calcPosition(610)).addClass("float_plurk_poster").fadeIn('fast');
+
+		this.isShowPoster = true;
+	},
+
+	closePlurkPoster: function() {
+		if (!this.isShowPoster) return;
+
+		$("#plurk_form").fadeOut('fast', function() {
+			$(this).removeClass("float_plurk_poster").css("left", "").show();
+			KeyboardControl._removeOverlay("poster");
+		});
+
+		this.isShowPoster = false;
+	},
+
 	showHelp: function() {
+		if (this.isShowHelp) return;
 		if (!this.isRenderedHelp) this._renderHelp();
 
-		$("#keyboardcontrol_help_overlay").show();
-		$("#keyboardcontrol_help_dialog").css("left", ($(window).width() - 610) / 2).fadeIn('fast');
+		this._showOverlay("help", function() {
+			KeyboardControl.closeHelp();
+		});
+
+		$("#keyboardcontrol_help_dialog").css("left", this.calcPosition(610)).fadeIn('fast');
+
+		this.isShowHelp = true;
 	},
 
 	closeHelp: function() {
-		if (!this.isRenderedHelp) return;
+		if (!this.isRenderedHelp || !this.isShowHelp) return;
 
 		$("#keyboardcontrol_help_dialog").fadeOut('fast', function() {
-			$("#keyboardcontrol_help_overlay").hide();
+			KeyboardControl._removeOverlay("help");
 		});
+
+		this.isShowHelp = false;
 	},
 
 	_renderHelp: function() {
 		if (this.isRenderedHelp) return;
-
-		$("<div/>", {
-			id: "keyboardcontrol_help_overlay",
-			click: function() {
-				KeyboardControl.closeHelp();
-			}
-		}).appendTo("body");
 
 		$("<div/>", {
 			id: "keyboardcontrol_help_dialog",
@@ -297,6 +332,17 @@ var KeyboardControl = {
 				html: shortcut.original ? $("<i/>").text(shortcut.label) : shortcut.label
 			})]
 		});
+	},
+
+	_showOverlay: function(overlayId, callback, appendTo) {
+		return $("<div/>", {
+			"class": "keyboardcontrol_overlay " + overlayId,
+			click: callback
+		}).appendTo(appendTo || "body");
+	},
+
+	_removeOverlay: function(overlayId) {
+		$(".keyboardcontrol_overlay." + overlayId).remove();
 	}
 };
 

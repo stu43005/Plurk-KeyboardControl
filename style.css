@@ -2,7 +2,7 @@
 	border: 1px solid rgba(255,100,0,0.5) !important;
 }
 
-#keyboardcontrol_help_overlay {
+.keyboardcontrol_overlay {
 	z-index: 10003;
 	background: #333;
 	position: fixed;
@@ -13,16 +13,20 @@
 	opacity: 0.9;
 }
 
-#keyboardcontrol_help_dialog {
+#keyboardcontrol_help_dialog, #plurk_form.float_plurk_poster {
 	z-index: 10004;
 	position: fixed;
 	width: 610px;
 	top: 160px;
 	left: 0;
-	background-color: #fff;
+	background-color: #fff !important;
 	border-radius: 6px;
 	background-clip: padding-box;
 	box-shadow: 0 4px 15px rgba(32,47,51,.20);
+}
+
+#plurk_form.float_plurk_poster {
+	padding: 20px;
 }
 
 #keyboardcontrol_help_header {
