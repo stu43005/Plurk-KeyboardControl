@@ -294,7 +294,7 @@ var KeyboardControl = {
 				})
 			}), $("<td/>", {
 				"class": "shortcut-label",
-				text: shortcut.label
+				html: shortcut.original ? $("<i/>").text(shortcut.label) : shortcut.label
 			})]
 		});
 	}
