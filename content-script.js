@@ -3,6 +3,8 @@ var KeyboardControl = {
 	isRenderedHelp: false,
 	isShowHelp: false,
 	isShowPoster: false,
+	isGoto: false,
+
 	helpList: [{
 		title: "動態",
 		shortcuts: [{
@@ -56,7 +58,22 @@ var KeyboardControl = {
 		}]
 	}, {
 		title: "時間軸",
-		shortcuts: []
+		shortcuts: [{
+			label: "所有訊息",
+			keys: ["g", "a"]
+		}, {
+			label: "我發表的訊息",
+			keys: ["g", "o"]
+		}, {
+			label: "私人訊息",
+			keys: ["g", "p"]
+		}, {
+			label: "回應過的訊息",
+			keys: ["g", "r"]
+		}, {
+			label: "喜歡/轉噗的訊息",
+			keys: ["g", "l"]
+		}]
 	}],
 
 	init: function() {
@@ -66,6 +83,37 @@ var KeyboardControl = {
 
 		$(document).bind("keydown", function(e) {
 			if ($.inArray(e.target.nodeName.toLowerCase(), ["input", "textarea"]) == -1) {
+				if (KeyboardControl.isGoto) {
+					var gotoMatch = true;
+					switch (e.keyCode) {
+						case 65: // a
+							KeyboardControl.filterTimeline("all", "all_plurks");
+							break;
+						case 79: // o
+							KeyboardControl.filterTimeline("own", "own_plurks_tab_btn");
+							break;
+						case 80: // p
+							KeyboardControl.filterTimeline("private", "private_plurks_tab_btn");
+							break;
+						case 82: // r
+							KeyboardControl.filterTimeline("responded", "responded_plurks_tab_btn");
+							break;
+						case 70: // f
+						case 76: // l
+							KeyboardControl.filterTimeline("favorite", "favorite_plurks_tab_btn");
+							break;
+						default:
+							gotoMatch = false;
+							break;
+					}
+					if (gotoMatch) {
+						KeyboardControl.isGoto = false;
+						return;
+					}
+				}
+
+				KeyboardControl.isGoto = (e.keyCode == 71);
+
 				switch (e.keyCode) {
 					case 13: // enter
 					case 32: // space
@@ -254,6 +302,15 @@ var KeyboardControl = {
 			Plurks.expand(AJS.$(args.id));
 		}, {
 			id: id || this.target
+		});
+	},
+
+	filterTimeline: function(timeline, tabId) {
+		Utils.localScript(function(args) {
+			DisplayOptions.filterTimeline(args.timeline, AJS.$(args.tabId));
+		}, {
+			timeline: timeline,
+			tabId: tabId
 		});
 	},
 
