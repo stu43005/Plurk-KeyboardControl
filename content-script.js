@@ -159,6 +159,7 @@ var KeyboardControl = {
 					case 78: // n
 						if ($("#form_holder:visible").length < 1) {
 							e.preventDefault();
+							KeyboardControl.closeHelp();
 							KeyboardControl.showPlurkPoster();
 							$("#input_big").focus();
 						}
@@ -171,6 +172,7 @@ var KeyboardControl = {
 
 					case 191:
 						if (e.shiftKey) { // ?
+							KeyboardControl.closePlurkPoster();
 							KeyboardControl.showHelp();
 						} else { // /
 							e.preventDefault();
@@ -180,6 +182,7 @@ var KeyboardControl = {
 
 					case 27: // esc
 						KeyboardControl.closeHelp();
+						KeyboardControl.closePlurkPoster();
 						break;
 				}
 			} else {
