@@ -374,9 +374,6 @@ var KeyboardControl = {
 
 		$("<div/>", {
 			id: "keyboardcontrol_help_dialog",
-			css: {
-				left: ($(window).width() - 610) / 2
-			},
 			html: [$("<div/>", {
 				id: "keyboardcontrol_help_header",
 				html: $("<h3/>", {
@@ -386,7 +383,10 @@ var KeyboardControl = {
 			}), $("<div/>", {
 				id: "keyboardcontrol_help_body",
 				"class": "clearfix",
-				html: this.helpList.map(this._renderHelpTable.bind(this))
+				html: this.helpList.map(this._renderHelpTable.bind(this)).concat($("<div/>", {
+					"class": "reference",
+					html: $("<i/>").text("*噗浪原生快速鍵")
+				}))
 			})]
 		}).appendTo("body");
 
@@ -413,7 +413,7 @@ var KeyboardControl = {
 				})
 			}), $("<td/>", {
 				"class": "shortcut-label",
-				html: shortcut.original ? $("<i/>").text(shortcut.label) : shortcut.label
+				html: shortcut.original ? $("<i/>").text(shortcut.label + "*") : shortcut.label
 			})]
 		});
 	},

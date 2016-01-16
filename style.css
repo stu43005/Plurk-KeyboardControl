@@ -102,3 +102,12 @@
 	padding-left: 8px;
 	color: #66757f;
 }
+
+#keyboardcontrol_help_body .reference {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	color: #66757f;
+	margin: 10px;
+	font-size: 11px;
+}
