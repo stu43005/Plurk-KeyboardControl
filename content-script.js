@@ -27,6 +27,12 @@ var KeyboardControl = {
 			label: "關閉噗文",
 			keys: ["Esc"],
 			original: true
+		}, {
+			label: "展開相片",
+			keys: ["o"]
+		}, {
+			label: "搜尋",
+			keys: ["/"]
 		}]
 	}, {
 		title: "導航",
@@ -110,9 +116,20 @@ var KeyboardControl = {
 						}
 						break;
 
-					case 191: // ?
-						KeyboardControl.showHelp();
+					case 79: // o
+						if (KeyboardControl.target === null) break;
+						KeyboardControl.openCBox();
 						break;
+
+					case 191:
+						if (e.shiftKey) { // ?
+							KeyboardControl.showHelp();
+						} else { // /
+							e.preventDefault();
+							$("#navbar_search_kw input").focus();
+						}
+						break;
+
 					case 27: // esc
 						KeyboardControl.closeHelp();
 						break;
@@ -121,7 +138,7 @@ var KeyboardControl = {
 				switch (e.keyCode) {
 					case 27: // esc
 						KeyboardControl.closePlurkPoster();
-						$("#input_big, #input_small").blur();
+						$("input, textarea").blur();
 						break;
 				}
 			}
@@ -175,9 +192,9 @@ var KeyboardControl = {
 		Utils.localScript(function(args) {
 			Plurks.removeCurrentOpen();
 			for (var i = 0; i < args.kbc.length; i++) {
-				Plurks.__plurkMouseOut(document.getElementById(args.kbc[i]));
+				Plurks.__plurkMouseOut(AJS.$(args.kbc[i]));
 			}
-			Plurks._plurkMouseOver(document.getElementById(args.id));
+			Plurks._plurkMouseOver(AJS.$(args.id));
 		}, {
 			id: id,
 			kbc: $(".kbcontrol").map(Utils.Map.attr("id"))
@@ -199,7 +216,7 @@ var KeyboardControl = {
 	callPlurkFunction: function(func, id) {
 		Utils.localScript(function(args) {
 			if (args.id !== undefined) {
-				Plurks._plurkMouseOver(document.getElementById(args.id));
+				Plurks._plurkMouseOver(AJS.$(args.id));
 			}
 			Plurks[args.func]();
 		}, {
@@ -234,7 +251,16 @@ var KeyboardControl = {
 
 	expandPlurk: function(id) {
 		Utils.localScript(function(args) {
-			Plurks.expand(document.getElementById(args.id));
+			Plurks.expand(AJS.$(args.id));
+		}, {
+			id: id || this.target
+		});
+	},
+
+	openCBox: function(id) {
+		Utils.localScript(function(args) {
+			var classList = ["pictureservices", "videoservices", "ogvideo", "iframeembed", "plink"];
+			jQuery("#" + args.id).find("." + classList.join(", .")).first().click();
 		}, {
 			id: id || this.target
 		});
