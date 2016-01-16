@@ -23,13 +23,18 @@ var Utils = {
 
 	/**
 	 * 執行本地腳本
-	 * @param  {Function} scriptText 函數
-	 * @param  {object}   args       參數
+	 * @param  {Function} func     函數
+	 * @param  {object}   args     參數
+	 * @param  {Function} callback 回調函數
 	 */
-	localScript: function(scriptText, args) {
-		var args = JSON.stringify(args);
-		if (typeof scriptText == 'function')
-			scriptText = '(' + scriptText + ')(' + args + ');';
+	localScript: function(func, args, callback) {
+		var id = '__localScript__' + (new Date()).getTime();
+		var jsonArgs = JSON.stringify(args);
+		var scriptText = '(' + func + ')(' + jsonArgs + ');';
+
+		if (typeof callback == 'function') {
+			scriptText = "window[\"" + id + "\"] = " + scriptText;
+		}
 
 		var script = document.createElement('script');
 		script.type = 'text/javascript';
@@ -39,6 +44,10 @@ var Utils = {
 		setTimeout(function() {
 			script.parentNode.removeChild(script);
 		}, 1000);
+
+		if (typeof callback == 'function') {
+			this.getGlobalVariable(id, callback);
+		}
 	},
 
 	/**
@@ -50,22 +59,22 @@ var Utils = {
 		if (typeof callback != 'function') return;
 		var id = '__getGlobalVariable__' + (new Date()).getTime();
 		this.localScript(function(args) {
-			var e = document.createElement('div');
-			var t = document.createTextNode(JSON.stringify(window[args.variable]));
-			e.id = args.id;
-			e.style.display = 'none';
-			e.appendChild(t);
-			document.body.appendChild(e);
+			var text = JSON.stringify(window[args.variable]);
+			var div = document.createElement('div');
+			div.id = args.id;
+			div.style.display = 'none';
+			div.appendChild(document.createTextNode(text));
+			document.body.appendChild(div);
 		}, {
 			variable: variable,
 			id: id
 		});
 
 		function retrive() {
-			var e = document.getElementById(id);
-			if (e) {
-				callback(JSON.parse(e.firstChild.nodeValue));
-				e.parentNode.removeChild(e);
+			var div = document.getElementById(id);
+			if (div) {
+				callback(JSON.parse(div.firstChild.nodeValue));
+				div.parentNode.removeChild(div);
 			} else {
 				setTimeout(retrive, 500);
 			}

@@ -1,5 +1,6 @@
 var KeyboardControl = {
 	target: null,
+	canEdit: false,
 	isRenderedHelp: false,
 	isShowHelp: false,
 	isShowPoster: false,
@@ -78,6 +79,12 @@ var KeyboardControl = {
 
 	init: function() {
 		if (!$("body").hasClass("timeline")) return;
+
+		Utils.localScript(function() {
+			return SiteState.canEdit();
+		}, null, function(canEdit) {
+			KeyboardControl.canEdit = canEdit;
+		});
 
 		Utils.createStyle("style.css");
 
@@ -309,6 +316,8 @@ var KeyboardControl = {
 	},
 
 	filterTimeline: function(timeline, tabId) {
+		if (!this.canEdit) return;
+
 		Utils.localScript(function(args) {
 			DisplayOptions.filterTimeline(args.timeline, AJS.$(args.tabId));
 		}, {
@@ -327,7 +336,7 @@ var KeyboardControl = {
 	},
 
 	showPlurkPoster: function() {
-		if (this.isShowPoster) return;
+		if (this.isShowPoster || !this.canEdit) return;
 
 		this._showOverlay("poster", function() {
 			KeyboardControl.closePlurkPoster();
