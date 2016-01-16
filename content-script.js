@@ -62,6 +62,7 @@ var KeyboardControl = {
 			if ($.inArray(e.target.nodeName.toLowerCase(), ["input", "textarea"]) == -1) {
 				switch (e.keyCode) {
 					case 13: // enter
+					case 32: // space
 						if (KeyboardControl.target === null) break;
 						e.preventDefault();
 						KeyboardControl.expandPlurk();
